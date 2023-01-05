@@ -20,7 +20,9 @@ int main(int argc, char *argv[])
 
     dbscanEucNorm.performClustering();
     dbscanEucNorm.printAllPoints();
+    std::cout << std::endl;
     dbscanEucNorm.printPointsByType();
+    std::cout << std::endl;
     dbscanEucNorm.printStats();
     
     return 0;

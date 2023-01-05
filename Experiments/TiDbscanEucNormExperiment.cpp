@@ -14,13 +14,15 @@ int main(int argc, char *argv[])
     double eps{std::stod(argv[2])};
     int minPoints{std::stoi(argv[3])};
 
-    std::cout << std::endl << "TiDbscanEucNorm" << std::endl;
+    std::cout << "TiDbscanEucNorm" << std::endl;
 
     Algorithms::TiDbscanEucNorm tiDbscanEucNorm{minPoints, std::sqrt(2 - 2 * eps), filename, Data::Point{{1,0}}};
 
     tiDbscanEucNorm.performClustering();
     tiDbscanEucNorm.printAllPoints();
+    std::cout << std::endl;
     tiDbscanEucNorm.printPointsByType();
+    std::cout << std::endl;
     tiDbscanEucNorm.printStats();
     
     return 0;

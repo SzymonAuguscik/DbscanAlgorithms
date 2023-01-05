@@ -19,7 +19,9 @@ int main(int argc, char *argv[])
 
     dbscanCos.performClustering();
     dbscanCos.printAllPoints();
+    std::cout << std::endl;
     dbscanCos.printPointsByType();
+    std::cout << std::endl;
     dbscanCos.printStats();
     
     return 0;
