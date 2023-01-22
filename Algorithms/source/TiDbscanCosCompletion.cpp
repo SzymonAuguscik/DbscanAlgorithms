@@ -9,11 +9,16 @@ std::vector<Data::Point> TiDbscanCosCompletion::getDataset(const Data::Point& p_
     return TiDbscan::getDataset(p_centralPoint);
 }
 
-void TiDbscanCosCompletion::setNeighbourhood(const Data::Point& p_centralPoint,
-                                       const std::vector<Data::Point>& p_dataset, 
-                                       std::vector<Data::Point>& p_potentialNeighbours)
+void TiDbscanCosCompletion::setNeighbourhood(Data::Point& p_centralPoint,
+                                             const std::vector<Data::Point>& p_dataset, 
+                                             std::vector<Data::Point>& p_potentialNeighbours)
 {
     return DbscanCosCompletion::setNeighbourhood(p_centralPoint, p_dataset, p_potentialNeighbours);
+}
+
+std::string TiDbscanCosCompletion::getAlgorithmName() const
+{
+    return "_TIDBSCANCOSCOMPLETION_";
 }
 
 }

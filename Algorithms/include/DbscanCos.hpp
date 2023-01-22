@@ -12,7 +12,8 @@ public:
                                                                               DbscanCosFamily{p_minPoints, p_eps, p_filePath}
     {}
 protected:
-    virtual void setNeighbourhood(const Data::Point&, const std::vector<Data::Point>&, std::vector<Data::Point>&) override;
+    virtual std::string getAlgorithmName() const override;
+    virtual void setNeighbourhood(Data::Point&, const std::vector<Data::Point>&, std::vector<Data::Point>&) override;
 };
 
 }

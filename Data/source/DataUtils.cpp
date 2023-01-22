@@ -4,6 +4,7 @@
 #include <numeric>
 #include <cmath>
 #include <iterator>
+
 #include <iostream>
 
 namespace Data
@@ -46,7 +47,7 @@ double getLength(const Point& p_point)
                                      [] (double p_coordinate1, double p_coordinate2) { return p_coordinate1 + p_coordinate2 * p_coordinate2; }));
 }
 
-double getCosSim(const Point& p_left, const Point& p_right, std::map<Data::Point, double> p_lengths)
+double getCosSim(const Point& p_left, const Point& p_right, std::map<int, double> p_lengths)
 {
     const auto& leftCoordinates = p_left.getCoordinates();
     const auto& rightCoordinates = p_right.getCoordinates();
@@ -66,10 +67,10 @@ double getCosSim(const Point& p_left, const Point& p_right, std::map<Data::Point
 
     double productSum = std::accumulate(products.begin(), products.end(), ZERO);
     
-    return productSum / (p_lengths[p_left] * p_lengths[p_right]);
+    return productSum / (p_lengths[p_left.getId()] * p_lengths[p_right.getId()]);
 }
 
-double getCosSimCompletion(const Point& p_left, const Point& p_right, std::map<Data::Point, double> p_lengths)
+double getCosSimCompletion(const Point& p_left, const Point& p_right, std::map<int, double> p_lengths)
 {
     return 1.0 - getCosSim(p_left, p_right, p_lengths);
 }

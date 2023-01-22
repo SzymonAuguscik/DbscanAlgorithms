@@ -6,23 +6,10 @@
 #include <DataUtils.hpp>
 #include <deque>
 #include <chrono>
+#include <iostream>
+#include <fstream>
 
-namespace
-{
-
-void printPoints(const std::vector<Data::Point>& p_points)
-{
-    for (auto p : p_points)
-    {
-        for (auto c : p.getCoordinates())
-        {
-            std::cout << c << " ";
-        }
-        std::cout << "Class: " << p.getClass() << ", Core: " << p.isCore() << std::endl;
-    }
-}
-
-}
+#include <set>
 
 namespace Data
 {
@@ -36,12 +23,13 @@ namespace Algorithms
 
 void Dbscan::performClustering()
 {
-    std::cout << "eps=" << _eps << std::endl;
+    std::cout << "[LOG] Clustering" << std::endl;
     const auto startTime = std::chrono::high_resolution_clock::now();
     int currentClass{0};
 
     for (auto& point : _points)
     {
+        std::cout << "[LOG] point id: " << point.getId() << std::endl;
         if (point.getClass() != Data::NO_CLASS)
         {
             continue;
@@ -65,6 +53,8 @@ void Dbscan::performClustering()
 
         while (seeds.size() > 0)
         {
+            std::set<Data::Point> s{seeds.begin(), seeds.end()};
+            std::cout << "Seeds: " << seeds.size() << ", " << s.size() << std::endl;
             const auto seed = std::find_if(_points.begin(), _points.end(), [&seeds] (const auto& p_point) { return seeds.front() == p_point; } );
             seeds.erase(std::remove_if(seeds.begin(), seeds.end(), [&seed] (auto& p_seed) { return p_seed == *seed; }), seeds.end());
 
@@ -96,13 +86,18 @@ void Dbscan::performClustering()
     }
     const auto endTime = std::chrono::high_resolution_clock::now();
     const auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime);
-    _stats.timeStats.clusteringTime = elapsedTime.count();
+    _stats.timeStats.clusteringAlgorithmTime = elapsedTime.count();
+    saveResults();
 }
 
 void Dbscan::loadData()
 {
+    std::cout << "[LOG] Loading data" << std::endl;
     auto startTime = std::chrono::high_resolution_clock::now();
     _points = _dataLoader->load();
+    std::for_each(_points.begin(),
+                  _points.end(),
+                  [] (Data::Point& p_point) { p_point.setClass(Data::NO_CLASS); });
     auto endTime = std::chrono::high_resolution_clock::now();
     auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime);
     _stats.timeStats.dataLoadingTime = elapsedTime.count();
@@ -118,7 +113,7 @@ std::vector<Data::Point> Dbscan::getDataset(const Data::Point&)
     return _points;
 }
 
-void Dbscan::setNeighbourhood(const Data::Point& p_centralPoint,
+void Dbscan::setNeighbourhood(Data::Point& p_centralPoint,
                               const std::vector<Data::Point>& p_dataset,
                               std::vector<Data::Point>& p_potentialNeighbours)
 {
@@ -128,74 +123,206 @@ void Dbscan::setNeighbourhood(const Data::Point& p_centralPoint,
                  std::back_inserter(p_potentialNeighbours),
                  [this, &p_centralPoint] (const auto& p_point)
                  {
+                     if (p_centralPoint == p_point)
+                     {
+                         return true;
+                     }
+                     p_centralPoint.incrementCalculationsCount();
                      _stats.operationStats.distanceCalculationsCount++;
                      return Data::getDistance(p_centralPoint, p_point) <= _eps;
                  });
+
+    std::for_each(p_potentialNeighbours.begin(),
+                  p_potentialNeighbours.end(),
+                  [&p_centralPoint] (const Data::Point& p_neighbour) { p_centralPoint.addNeighbourId(p_neighbour.getId()); });
 }
 
 void Dbscan::sortPoints()
 {
+    std::cout << "[LOG] Sorting" << std::endl;
     std::sort(_points.begin(),
               _points.end());
 }
 
-void Dbscan::printAllPoints()
+int Dbscan::getClassNumber() const
 {
-    std::cout << "All points: " << std::endl;
-    printPoints(_points);
+    const auto& p_point = std::max_element(_points.begin(),
+                                           _points.end(),
+                                           [] (const Data::Point& p_point1, const Data::Point& p_point2) { return p_point1.getClass() < p_point2.getClass(); });
+    return p_point->getClass() + 1;
 }
 
-void Dbscan::printPointsByType()
+int Dbscan::getNoisePointsNumber() const
 {
-    std::cout << "Core points: " << std::endl;
-    printPoints(getCorePoints());
-    std::cout << "Reachable points: " << std::endl;
-    printPoints(getReachablePoints());
-    std::cout << "Noise points: " << std::endl;
-    printPoints(getNoisePoints());
-}
-
-void Dbscan::printStats()
-{
-    std::cout << "Overall stats" << std::endl;
-    std::cout << "  Time stats" << std::endl;
-    std::cout << "  - data loading time = " << _stats.timeStats.dataLoadingTime << " us" << std::endl;
-    std::cout << "  - clustering time = " << _stats.timeStats.clusteringTime << " us" << std::endl;
-    std::cout << "  - points sorting time = " << _stats.timeStats.pointsSortingTime << " us" << std::endl;
-    std::cout << "  - results printing time = " << _stats.timeStats.resultsPrintingTime << " us" << std::endl;
-    std::cout << "  Operations stats" << std::endl;
-    std::cout << "  - distance calculations count = " << _stats.operationStats.distanceCalculationsCount << std::endl;
-    std::cout << "  - triangle inequality filter count = " << _stats.operationStats.triangleInequalityFilterCount << std::endl;
-}
-
-std::vector<Data::Point> Dbscan::getNoisePoints()
-{
-    std::vector<Data::Point> noisePoints{};
-    std::copy_if(_points.begin(),
-                 _points.end(),
-                 std::back_inserter(noisePoints),
-                 [] (const Data::Point& p_point) { return p_point.getClass() == Data::NOISE; });
+    int noisePoints = std::count_if(_points.begin(),
+                                    _points.end(),
+                                    [] (const Data::Point& p_point) { return p_point.getClass() == Data::NOISE; });
     return noisePoints;
 }
 
-std::vector<Data::Point> Dbscan::getReachablePoints()
+int Dbscan::getReachablePointsNumber() const
 {
-    std::vector<Data::Point> reachablePoints{};
-    std::copy_if(_points.begin(),
-                 _points.end(),
-                 std::back_inserter(reachablePoints),
-                 [] (const Data::Point& p_point) { return !p_point.isCore() && p_point.getClass() != Data::NOISE; });
+    int reachablePoints = std::count_if(_points.begin(),
+                                        _points.end(),
+                                        [] (const Data::Point& p_point) { return !p_point.isCore() && p_point.getClass() != Data::NOISE; });
     return reachablePoints;
 }
 
-std::vector<Data::Point> Dbscan::getCorePoints()
+int Dbscan::getCorePointsNumber() const
 {
-    std::vector<Data::Point> corePoints{};
-    std::copy_if(_points.begin(),
-                 _points.end(),
-                 std::back_inserter(corePoints),
-                 [] (const Data::Point& p_point) { return p_point.isCore(); });
+    int corePoints = std::count_if(_points.begin(),
+                                   _points.end(),
+                                   [] (const Data::Point& p_point) { return p_point.isCore(); });
     return corePoints;
+}
+
+std::string Dbscan::getAlgorithmName() const
+{
+    return "_DBSCAN_";
+}
+
+std::string Dbscan::buildResultFilename(std::string p_prefix) const
+{
+    int dimension = _points[0].getCoordinates().size();
+    int pointsNumber = _points.size();
+    std::string dataFilename = _filePath.substr(_filePath.find_last_of("/\\") + 1);
+    std::string datasetName = dataFilename.substr(0, dataFilename.find_last_of("."));
+
+    return RESULTS_DIR + p_prefix + getAlgorithmName() + datasetName
+                       + "_D" + std::to_string(dimension)
+                       + "_R" + std::to_string(pointsNumber)
+                       + "_mP" + std::to_string(_minPoints)
+                       + "_E" + std::to_string(_eps)
+                       + _refSufix + ".txt";
+}
+
+void Dbscan::fillRandIndex()
+{
+    size_t size{_points.size()};
+    int truePositives{0};
+    int trueNegatives{0};
+
+    for (size_t i = 0; i < size; i++)
+    {
+        for (size_t j = i + 1; j < size; j++)
+        {
+            auto firstOriginalClass = _points[i].getOriginalClass();
+            auto secondOriginalClass = _points[j].getOriginalClass();
+            auto firstClusteredClass = _points[i].getClass();
+            auto secondClusteredClass = _points[j].getClass();
+
+            if (firstOriginalClass == secondOriginalClass && firstClusteredClass == secondClusteredClass)
+            {
+                truePositives++;
+                continue;
+            }
+
+            if (firstOriginalClass != secondOriginalClass && firstClusteredClass != secondClusteredClass)
+            {
+                trueNegatives++;
+            }
+        }
+    }
+
+    int pairsNumber{static_cast<int>(size * (size - 1) / 2)};
+
+    _stats.scoreStats.truePositives = truePositives;
+    _stats.scoreStats.trueNegatives = trueNegatives;
+    _stats.scoreStats.pairsNumber = pairsNumber;
+    _stats.scoreStats.randIndex = (truePositives + trueNegatives) / static_cast<double>(pairsNumber);
+}
+
+void Dbscan::saveResults()
+{
+    std::cout << "[LOG] Saving results" << std::endl;
+    const auto startTime = std::chrono::high_resolution_clock::now();
+    saveOutputFile();
+    const auto endTime = std::chrono::high_resolution_clock::now();
+    const auto elapsedTime = std::chrono::duration_cast<std::chrono::microseconds>(endTime - startTime);
+    _stats.timeStats.outputSavingTime = elapsedTime.count();
+    fillRandIndex();
+    saveStatFile();
+}
+
+void Dbscan::saveOutputFile() const
+{
+    std::ofstream outFile{buildResultFilename(OUT_PREFIX)};
+    outFile << "id, coordinates..., calculationCount, type, class, |N_eps|, N_eps...\n";
+
+    for (auto point : _points)
+    {
+        outFile << point.getId() << ", ";
+
+        for (auto coordinate : point.getCoordinates())
+        {
+            outFile << coordinate << ", ";
+        }
+
+        outFile << point.getCalculationsCount() << ", ";
+        outFile << (point.getClass() != Data::NOISE ? (int)point.isCore() : Data::NOISE) << ", ";
+        outFile << point.getClass() << ", ";
+        outFile << point.getNeighbourIds().size();
+        
+        for (auto id : point.getNeighbourIds())
+        {
+            outFile << ", " << id;
+        }
+
+        outFile << std::endl;
+    }
+
+    outFile.close();
+}
+
+std::string Dbscan::getEpsilonView() const
+{
+    return "eps: " + std::to_string(_eps) + '\n';
+}
+
+void Dbscan::saveStatFile() const
+{
+    std::ofstream outFile{buildResultFilename(STAT_PREFIX)};
+    std::string dataFilename = _filePath.substr(_filePath.find_last_of("/\\") + 1);
+    outFile << "Data filename: " << dataFilename << std::endl;
+
+    int dimension = _points[0].getCoordinates().size();
+    outFile << "Points dimension: " << dimension << std::endl;
+
+    int pointsNumber = _points.size();
+    outFile << "Points number: " << pointsNumber << std::endl;
+    outFile << "minPoints: " << _minPoints << std::endl;
+    outFile << getEpsilonView();
+    outFile << getReferencePointView();
+
+    outFile << std::endl;
+
+    outFile << "data loading time: " << _stats.timeStats.dataLoadingTime << " microseconds" << std::endl;
+    outFile << "normalizing time: " << _stats.timeStats.normalizingTime << " microseconds" << std::endl;
+    outFile << "reference distance calculations time: " << _stats.timeStats.referenceDistanceCalculationsTime << " microseconds" << std::endl;
+    outFile << "points sorting time: " << _stats.timeStats.pointsSortingTime << " microseconds" << std::endl;
+    outFile << "output saving time: " << _stats.timeStats.outputSavingTime << " microseconds" << std::endl;
+    outFile << "clustering algorithm time: " << _stats.timeStats.clusteringAlgorithmTime << " microseconds" << std::endl;
+
+    outFile << std::endl;
+
+    outFile << "distance calculations count: " << _stats.operationStats.distanceCalculationsCount << std::endl;
+    outFile << "triangle inequality filter count: " << _stats.operationStats.triangleInequalityFilterCount << std::endl;
+
+    outFile << std::endl;
+
+    outFile << "classes number: " << getClassNumber() << std::endl;
+    outFile << "core points number: " << getCorePointsNumber() << std::endl;
+    outFile << "reachable points number: " << getReachablePointsNumber() << std::endl;
+    outFile << "noise points number: " << getNoisePointsNumber() << std::endl;
+
+    outFile << std::endl;
+
+    outFile << "|TP|: " << _stats.scoreStats.truePositives << std::endl;
+    outFile << "|TN|: " << _stats.scoreStats.trueNegatives << std::endl;
+    outFile << "Number of pairs: " << _stats.scoreStats.pairsNumber << std::endl;
+    outFile << "RAND index: " << _stats.scoreStats.randIndex << std::endl;
+
+    outFile.close();
 }
 
 }

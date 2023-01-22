@@ -1,6 +1,5 @@
 #include <iostream>
 #include <DbscanEucNorm.hpp>
-#include <cmath>
 
 int main(int argc, char *argv[])
 {
@@ -14,16 +13,9 @@ int main(int argc, char *argv[])
     double eps{std::stod(argv[2])};
     int minPoints{std::stoi(argv[3])};
 
-    std::cout << "DbscanEucNorm" << std::endl;
-
-    Algorithms::DbscanEucNorm dbscanEucNorm{minPoints, std::sqrt(2 - 2 * eps), filename};
+    Algorithms::DbscanEucNorm dbscanEucNorm{minPoints, eps, filename};
 
     dbscanEucNorm.performClustering();
-    dbscanEucNorm.printAllPoints();
-    std::cout << std::endl;
-    dbscanEucNorm.printPointsByType();
-    std::cout << std::endl;
-    dbscanEucNorm.printStats();
     
     return 0;
 }

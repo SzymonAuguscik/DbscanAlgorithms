@@ -13,16 +13,9 @@ int main(int argc, char *argv[])
     double eps{std::stod(argv[2])};
     int minPoints{std::stoi(argv[3])};
 
-    std::cout << "DbscanCos" << std::endl;
-
     Algorithms::DbscanCos dbscanCos{minPoints, eps, filename};
 
     dbscanCos.performClustering();
-    dbscanCos.printAllPoints();
-    std::cout << std::endl;
-    dbscanCos.printPointsByType();
-    std::cout << std::endl;
-    dbscanCos.printStats();
     
     return 0;
 }

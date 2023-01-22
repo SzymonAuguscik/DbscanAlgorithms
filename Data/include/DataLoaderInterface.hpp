@@ -13,7 +13,7 @@ const std::string ARFF_FILE{".arff"};
 class DataLoaderInterface
 {
 public:
-    virtual std::vector<Point> load() const = 0;
+    virtual std::vector<Point> load() = 0;
 };
 
 }

@@ -15,7 +15,7 @@ public:
     }
 protected:
     virtual void loadData() override;
-    std::map<Data::Point, double> _lengths{};
+    std::map<int, double> _lengths{};
 };
 
 }

@@ -1,0 +1,26 @@
+Data filename: 2d-4c-no4.arff
+Points dimension: 2
+Points number: 863
+minPoints: 10
+original eps: 0.999000
+eps: 0.044721
+
+data loading time: 1871 microseconds
+normalizing time: 157 microseconds
+reference distance calculations time: 0 microseconds
+points sorting time: 3205 microseconds
+output saving time: 5592 microseconds
+clustering algorithm time: 1262954 microseconds
+
+distance calculations count: 743906
+triangle inequality filter count: 0
+
+classes number: 4
+core points number: 773
+reachable points number: 34
+noise points number: 56
+
+|TP|: 127757
+|TN|: 110216
+Number of pairs: 371953
+RAND index: 0.639793

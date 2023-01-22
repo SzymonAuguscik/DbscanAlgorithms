@@ -1,12 +1,16 @@
+#pragma once
+
 namespace Results
 {
 
 struct TimeStats
 {
-    int clusteringTime{};
     int dataLoadingTime{};
+    int normalizingTime{};
+    int referenceDistanceCalculationsTime{};
     int pointsSortingTime{};
-    int resultsPrintingTime{};
+    int outputSavingTime{};
+    int clusteringAlgorithmTime{};
 };
 
 }

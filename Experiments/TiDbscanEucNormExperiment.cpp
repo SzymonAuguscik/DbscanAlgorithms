@@ -1,10 +1,9 @@
 #include <iostream>
 #include <TiDbscanEucNorm.hpp>
-#include <cmath>
 
 int main(int argc, char *argv[])
 {
-    if (argc < 4)
+    if (argc < 5)
     {
         std::cerr << "Not enough arguments!" << std::endl;
         return 1;
@@ -13,17 +12,11 @@ int main(int argc, char *argv[])
     std::string filename{argv[1]};
     double eps{std::stod(argv[2])};
     int minPoints{std::stoi(argv[3])};
+    std::string referencePointMode{argv[4]};
 
-    std::cout << "TiDbscanEucNorm" << std::endl;
-
-    Algorithms::TiDbscanEucNorm tiDbscanEucNorm{minPoints, std::sqrt(2 - 2 * eps), filename, Data::Point{{1,0}}};
+    Algorithms::TiDbscanEucNorm tiDbscanEucNorm{minPoints, eps, filename, referencePointMode};
 
     tiDbscanEucNorm.performClustering();
-    tiDbscanEucNorm.printAllPoints();
-    std::cout << std::endl;
-    tiDbscanEucNorm.printPointsByType();
-    std::cout << std::endl;
-    tiDbscanEucNorm.printStats();
     
     return 0;
 }

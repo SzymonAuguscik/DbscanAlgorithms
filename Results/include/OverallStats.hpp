@@ -1,5 +1,6 @@
 #include <OperationsStats.hpp>
 #include <TimeStats.hpp>
+#include <ScoreStats.hpp>
 
 #pragma once
 
@@ -10,6 +11,7 @@ struct OverallStats
 {
     OperationStats operationStats{};
     TimeStats timeStats{};
+    ScoreStats scoreStats{};
 };
 
 }
