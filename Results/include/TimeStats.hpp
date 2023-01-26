@@ -3,6 +3,8 @@
 namespace Results
 {
 
+// TODO
+// fix time narrowing
 struct TimeStats
 {
     int dataLoadingTime{};

@@ -1,0 +1,27 @@
+Data filename: lecture.csv
+Points dimension: 2
+Points number: 12
+minPoints: 8
+original eps: 0.970000
+eps: 0.244949
+reference point: { 1.000000 0.000000 }
+
+data loading time: 81 microseconds
+normalizing time: 4 microseconds
+reference distance calculations time: 14 microseconds
+points sorting time: 28 microseconds
+output saving time: 145 microseconds
+clustering algorithm time: 229 microseconds
+
+distance calculations count: 36
+triangle inequality filter count: 54
+
+classes number: 0
+core points number: 0
+reachable points number: 0
+noise points number: 12
+
+|TP|: 27
+|TN|: 0
+Number of pairs: 66
+RAND index: 0.409091

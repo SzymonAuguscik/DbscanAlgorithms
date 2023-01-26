@@ -1,0 +1,26 @@
+Data filename: complex9.arff
+Points dimension: 2
+Points number: 3031
+minPoints: 5
+original eps: 0.999999
+eps: 0.001414
+
+data loading time: 6556 microseconds
+normalizing time: 593 microseconds
+reference distance calculations time: 0 microseconds
+points sorting time: 15440 microseconds
+output saving time: 14911 microseconds
+clustering algorithm time: 21577390 microseconds
+
+distance calculations count: 9183930
+triangle inequality filter count: 0
+
+classes number: 114
+core points number: 2482
+reachable points number: 220
+noise points number: 329
+
+|TP|: 71731
+|TN|: 3611778
+Number of pairs: 4591965
+RAND index: 0.802164

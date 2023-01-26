@@ -10,7 +10,7 @@ if __name__ == "__main__":
     translation = dict(zip(letters, range(len(letters))))
 
     df['class'] = df['class'].str.decode("utf-8")
-    df = df[df['class'].isin(letters[:3])]
+    df = df[df['class'].isin(letters[:5])]
     df['class'].replace(translation, inplace=True)
     print(df.head())
     print(len(df))

@@ -1,0 +1,27 @@
+Data filename: letter_mapped.arff
+Points dimension: 16
+Points number: 3864
+minPoints: 50
+original eps: 0.990000
+eps: 0.141421
+reference point: { 0.000000 0.000000 0.000000 0.000000 0.000000 1.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 }
+
+data loading time: 40967 microseconds
+normalizing time: 1240 microseconds
+reference distance calculations time: 6689 microseconds
+points sorting time: 23161 microseconds
+output saving time: 39209 microseconds
+clustering algorithm time: 88990887 microseconds
+
+distance calculations count: 11786066
+triangle inequality filter count: 11801559
+
+classes number: 60
+core points number: 933
+reachable points number: 1346
+noise points number: 1585
+
+|TP|: 653695
+|TN|: 4659025
+Number of pairs: 7463316
+RAND index: 0.711844

@@ -47,14 +47,12 @@ void Dbscan::performClustering()
         
         point.setCore();
         point.setClass(currentClass);
-        std::vector<Data::Point> seeds;
         neighbours.erase(std::remove_if(neighbours.begin(), neighbours.end(), [&point] (auto& p_point) { return p_point == point; } ), neighbours.end());
+        std::vector<Data::Point> seeds;
         std::copy(neighbours.begin(), neighbours.end(), std::back_inserter(seeds));
 
         while (seeds.size() > 0)
         {
-            std::set<Data::Point> s{seeds.begin(), seeds.end()};
-            std::cout << "Seeds: " << seeds.size() << ", " << s.size() << std::endl;
             const auto seed = std::find_if(_points.begin(), _points.end(), [&seeds] (const auto& p_point) { return seeds.front() == p_point; } );
             seeds.erase(std::remove_if(seeds.begin(), seeds.end(), [&seed] (auto& p_seed) { return p_seed == *seed; }), seeds.end());
 
@@ -79,7 +77,10 @@ void Dbscan::performClustering()
                 seed->setCore();
                 seedNeighbours.erase(std::remove_if(seedNeighbours.begin(), seedNeighbours.end(), [&seed] (const auto& p_point) { return *seed == p_point; }), seedNeighbours.end());
                 seedNeighbours.erase(std::remove_if(seedNeighbours.begin(), seedNeighbours.end(), [&seeds] (const auto& p_neighbour) { return std::count(seeds.begin(), seeds.end(), p_neighbour) != 0; }), seedNeighbours.end());
-                std::copy(seedNeighbours.begin(), seedNeighbours.end(), std::back_inserter(seeds));
+                std::copy_if(seedNeighbours.begin(),
+                             seedNeighbours.end(),
+                             std::back_inserter(seeds),
+                             [&seeds] (const Data::Point& p_point) { return std::find(seeds.begin(), seeds.end(), p_point) == seeds.end(); } );
             }
         }
         currentClass++;
@@ -121,12 +122,20 @@ void Dbscan::setNeighbourhood(Data::Point& p_centralPoint,
     std::copy_if(p_dataset.begin(),
                  p_dataset.end(),
                  std::back_inserter(p_potentialNeighbours),
-                 [this, &p_centralPoint] (const auto& p_point)
+                 [&] (const auto& p_point)
                  {
+                     if (std::find(p_potentialNeighbours.begin(),
+                                   p_potentialNeighbours.end(),
+                                   p_point) != p_potentialNeighbours.end())
+                     {
+                         return false;
+                     }
+
                      if (p_centralPoint == p_point)
                      {
                          return true;
                      }
+
                      p_centralPoint.incrementCalculationsCount();
                      _stats.operationStats.distanceCalculationsCount++;
                      return Data::getDistance(p_centralPoint, p_point) <= _eps;
