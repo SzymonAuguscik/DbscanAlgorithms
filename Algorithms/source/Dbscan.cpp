@@ -169,12 +169,12 @@ int Dbscan::getNoisePointsNumber() const
     return noisePoints;
 }
 
-int Dbscan::getReachablePointsNumber() const
+int Dbscan::getBorderPointsNumber() const
 {
-    int reachablePoints = std::count_if(_points.begin(),
+    int borderPoints = std::count_if(_points.begin(),
                                         _points.end(),
                                         [] (const Data::Point& p_point) { return !p_point.isCore() && p_point.getClass() != Data::NOISE; });
-    return reachablePoints;
+    return borderPoints;
 }
 
 int Dbscan::getCorePointsNumber() const
@@ -321,7 +321,7 @@ void Dbscan::saveStatFile() const
 
     outFile << "classes number: " << getClassNumber() << std::endl;
     outFile << "core points number: " << getCorePointsNumber() << std::endl;
-    outFile << "reachable points number: " << getReachablePointsNumber() << std::endl;
+    outFile << "border points number: " << getBorderPointsNumber() << std::endl;
     outFile << "noise points number: " << getNoisePointsNumber() << std::endl;
 
     outFile << std::endl;

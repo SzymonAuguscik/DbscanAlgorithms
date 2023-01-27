@@ -39,7 +39,7 @@ protected:
     void saveStatFile() const;
     int getClassNumber() const;
     int getNoisePointsNumber() const;
-    int getReachablePointsNumber() const;
+    int getBorderPointsNumber() const;
     int getCorePointsNumber() const;
 
     std::string buildResultFilename(std::string) const;

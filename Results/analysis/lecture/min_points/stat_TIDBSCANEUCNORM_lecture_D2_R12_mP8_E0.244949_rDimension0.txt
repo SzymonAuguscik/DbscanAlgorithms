@@ -18,7 +18,7 @@ triangle inequality filter count: 54
 
 classes number: 0
 core points number: 0
-reachable points number: 0
+border points number: 0
 noise points number: 12
 
 |TP|: 27
