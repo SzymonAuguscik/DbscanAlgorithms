@@ -6,12 +6,12 @@ original eps: 0.999999
 eps: 0.001414
 reference point: { 1.000000 0.000000 }
 
-data loading time: 53248 microseconds
-normalizing time: 1073 microseconds
-reference distance calculations time: 3479 microseconds
-points sorting time: 19130 microseconds
-output saving time: 13517 microseconds
-clustering algorithm time: 2701375 microseconds
+data loading time: 7336 microseconds
+normalizing time: 521 microseconds
+reference distance calculations time: 3873 microseconds
+points sorting time: 19184 microseconds
+output saving time: 16325 microseconds
+clustering algorithm time: 2753247 microseconds
 
 distance calculations count: 24468
 triangle inequality filter count: 30527
