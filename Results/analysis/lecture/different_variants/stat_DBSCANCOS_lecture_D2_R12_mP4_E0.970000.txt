@@ -4,12 +4,12 @@ Points number: 12
 minPoints: 4
 eps: 0.970000
 
-data loading time: 165 microseconds
+data loading time: 174 microseconds
 normalizing time: 0 microseconds
 reference distance calculations time: 0 microseconds
-points sorting time: 60 microseconds
-output saving time: 357 microseconds
-clustering algorithm time: 1307 microseconds
+points sorting time: 87 microseconds
+output saving time: 102 microseconds
+clustering algorithm time: 1351 microseconds
 
 distance calculations count: 132
 triangle inequality filter count: 0

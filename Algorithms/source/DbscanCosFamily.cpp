@@ -1,6 +1,5 @@
 #include <DbscanCosFamily.hpp>
 #include <DataUtils.hpp>
-#include <chrono>
 #include <algorithm>
 
 namespace Algorithms

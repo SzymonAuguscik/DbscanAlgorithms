@@ -3,16 +3,14 @@
 namespace Results
 {
 
-// TODO
-// fix time narrowing
 struct TimeStats
 {
-    int dataLoadingTime{};
-    int normalizingTime{};
-    int referenceDistanceCalculationsTime{};
-    int pointsSortingTime{};
-    int outputSavingTime{};
-    int clusteringAlgorithmTime{};
+    long dataLoadingTime{};
+    long normalizingTime{};
+    long referenceDistanceCalculationsTime{};
+    long pointsSortingTime{};
+    long outputSavingTime{};
+    long clusteringAlgorithmTime{};
 };
 
 }
